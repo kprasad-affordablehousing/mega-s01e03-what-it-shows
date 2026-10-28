@@ -6,6 +6,9 @@ import { deskRef } from '../src/lib/kb/desk-ref.ts';
 const load = (file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8');
 
 test('the signed review is genuinely rendered with counts, chart, links and CSS', async () => {
+  const source = await load('src/routes/kb/incidents/4471-review/+page.svx');
+  const signature = source.match(/^signature: '([^']+)'$/m)?.[1];
+  assert.ok(signature, 'the page must carry its assigned signature');
   const html = await load('rendered/kb/incidents/4471-review/index.html');
   assert.match(html, /<td\b[^>]*>379<\/td>/);
   assert.match(html, /<td\b[^>]*>33<\/td>/);
@@ -16,7 +19,7 @@ test('the signed review is genuinely rendered with counts, chart, links and CSS'
   assert.equal((html.match(/<rect /g) ?? []).length, 54);
   assert.ok(html.includes('https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/1'));
   assert.ok(html.includes('https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/2'));
-  assert.ok(html.includes(deskRef('Copilot / kprasad-affordablehousing / 2026-10-28')));
+  assert.ok(html.includes(deskRef(signature)));
   const styles = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
     .map((match) => match[1]).join('');
   assert.ok(styles.length > 1000, 'component and layout CSS must be embedded');
