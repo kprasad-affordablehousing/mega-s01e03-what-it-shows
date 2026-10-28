@@ -2,7 +2,7 @@
 layout: runbook
 title: '#4471 review: separate the parser and form-hint defects'
 owner: Copilot for kprasad-affordablehousing
-status: proposed
+status: reviewed
 reviewed: '2026-10-28'
 signature: 'v1.eyJzdWIiOiI0NDMzIiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMyMTAwMzYsImV4cCI6MTc5MzI5NjQzNn0.zVrE_ePDJB9htqw7nN7-c59OE-96JJ63LLnp1-Y-oXI'
 ---
@@ -21,8 +21,9 @@ Its executable table disagrees: the reports split between a shared parser defect
 and a booking-form hint defect. Fixing the shared parser alone does not resolve
 the form's contradictory instruction.
 
-This review uses the 4 October export. It does not claim that either fix has
-shipped or that the live desk queue has stopped changing.
+This review separates the 4 October export from the
+[desk's 5 October engineering update](https://hq.mega.dev/challenges/what-it-shows),
+read on 28 October. Closing a ticket does not change the historical report counts.
 
 ## Evidence from the exported records
 
@@ -40,7 +41,7 @@ takes the parser path. A day-first tenant's booking-v3 form takes the hint path.
 The deployed form and channel matter together. Intake tags inferred from a
 reporter's browser are guesses, not root-cause evidence.
 
-## Separate tickets and separate fixes
+## Separate tickets and separate outcomes
 
 - [Shared month-first parser: GitHub issue 2](https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/2). Dates written day first are read month first. Use an explicit input/date-format contract or an unambiguous representation instead of guessing slash-date order.
 - [booking-v3 date hint: GitHub issue 1](https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/1). Alder Physio, Copper Studio and Pale Harbour run a form whose hint prints `MM/DD/YYYY`, while the form reads dates in the tenant's day-first order. Make its label, example, validation and parsing agree.
@@ -49,6 +50,24 @@ The report-ID lists in `analysis.json` account for every report exactly once.
 They are computed with the exported helpers, not copied from the old prose or
 grouped by subject. The issues describe the evidence boundary: the export models
 the failure mechanisms; it is not a production reproduction.
+
+## Engineering update: closed does not always mean fixed
+
+The desk reports incident 4471 **closed on 5 October**, with different outcomes:
+
+| Problem and ticket | Desk-reported outcome | GitHub closure reason |
+| --- | --- | --- |
+| [Shared parser, issue 2](https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/2) | **FIXED**: `fix(dates): parse dd/mm for eu locales` | `completed` |
+| [booking-v3 hint, issue 1](https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/1) | **WON'T FIX**: booking-v3 form retired | `not planned` |
+
+These are desk-reported outcomes, not a production change implemented or
+independently verified in this repository. The retired form's hint was
+**not fixed**. Retirement removes the affected form rather than correcting its
+misleading instruction; do not describe both closed tickets as fixed.
+
+The update does not supply reproduction evidence for the five one-day
+descriptions. Their uncertainty below remains open even though the desk closed
+the parent incident and the two modeled defects have recorded dispositions.
 
 ## Receipt time is not merge time
 

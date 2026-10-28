@@ -63,4 +63,13 @@ site routes. No production service or model API is called.
 
 The original accepted decision and source records are unchanged. The new review
 proposes superseding the old triage rule; it does not pretend that proposal is
-already accepted or that either product defect has been fixed.
+already accepted.
+
+The [desk's engineering update](https://hq.mega.dev/challenges/what-it-shows),
+read on 28 October, records incident 4471 closed on 5 October. The parser is
+**fixed** (`fix(dates): parse dd/mm for eu locales`); the hint is **won't fix**
+because booking-v3 was retired, not corrected. The corresponding GitHub closure
+reasons are `completed` and `not planned`, respectively. The 379/33 report split
+remains the historical 4 October snapshot. This repository documents the desk's
+outcomes; it does not implement or independently verify a production fix, or
+resolve the five anomalous one-day descriptions.

@@ -29,6 +29,18 @@ test('the signed review is genuinely rendered with counts, chart, links and CSS'
   assert.ok(!html.includes('C:/Users/'));
 });
 
+test('desk closure distinguishes the parser fix from retirement without a hint fix', async () => {
+  const html = await load('rendered/kb/incidents/4471-review/index.html');
+  assert.ok(html.includes('https://hq.mega.dev/challenges/what-it-shows'));
+  assert.ok(html.includes('<strong>closed on 5 October</strong>'));
+  assert.ok(html.includes('fix(dates): parse dd/mm for eu locales'));
+  assert.ok(html.includes('booking-v3 form retired'));
+  assert.ok(html.includes('<code>completed</code>'));
+  assert.ok(html.includes('<code>not planned</code>'));
+  assert.ok(html.includes('<strong>not fixed</strong>'));
+  assert.ok(html.includes('Their uncertainty below remains open'));
+});
+
 test('the KB index discovers the new page and old guidance is visibly stale', async () => {
   const index = await load('rendered/kb/index.html');
   assert.ok(index.includes('href="/kb/incidents/4471-review"'));
