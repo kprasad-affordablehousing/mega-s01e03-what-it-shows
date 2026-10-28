@@ -1,0 +1,32 @@
+## Problem
+
+The booking-v3 form prints `MM/DD/YYYY` for day-first tenants, but interprets the entered date in the tenant's day-first order. People following the visible hint receive a swapped date. This is a separate defect from the shared month-first parser.
+
+## Reports covered: 33
+
+This is the hint group among the 412 unique reports merged into support incident #4471 in the 4 October export. The 427 raw export rows include 15 repeated report IDs; deduplicate IDs before grouping.
+
+Reproduce the count with `npm ci && npm run analyze`. `analysis.json` records every report ID. The exported `causeOf` helper selects this group only when the tenant is day-first, the channel is `form`, and its deployed form's hint begins with `MM`.
+
+- Affected tenants: Alder Physio (`de-DE`), Copper Studio (`es-ES`), and Pale Harbour (`pt-PT`), all running booking-v3.
+- Received: 17 April through 22 September 2026.
+- Intake tagged 15 as parser and 18 as hint. Browser-locale intake tags hide almost half this group.
+- The original incident's executable cause table identifies these as "not this ticket - no ticket of its own", despite the prose claiming one issue and one queued fix.
+
+## Reproduction and contract
+
+For Alder Physio, enter `04/07/2026` following the visible month-first hint to mean 7 April. A day-first interpretation makes it 4 July.
+
+Expected: the field's label, example, validation and parser use the same explicit format.
+
+Actual: the hint says month first while the form reads day first.
+
+An app report for that same tenant follows the parser path instead. Channel or tenant alone is insufficient; resolve both with the tenant's deployed form.
+
+## Proposed fix and acceptance
+
+Derive the hint from the same locale/date contract as form parsing, or use an unambiguous date control/representation. Check all three affected tenant locales, ambiguous dates, validation messages and displayed examples. Confirm existing booking-v2 and month-first tenant behavior stays unchanged.
+
+A shared-parser fix cannot resolve this label/interpretation mismatch by itself. Keep this issue separate even when subjects match.
+
+The export demonstrates the modeled form defect and its report classification, not a production reproduction or deployed fix.

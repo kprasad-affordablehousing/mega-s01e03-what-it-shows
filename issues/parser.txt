@@ -1,0 +1,32 @@
+## Problem
+
+The shared date parser interprets every slash date as month/day, even for day-first tenants. A booking written as 07/04/2026 (7 April) becomes 4 July.
+
+## Reports covered: 379
+
+This is the parser group among the 412 unique reports merged into support incident #4471 in the 4 October export. The export contains 427 rows; deduplicating by report ID removes 15 overlapping export rows. Do not count identical bodies as duplicates.
+
+Reproduce the count with `npm ci && npm run analyze`. `analysis.json` records every report ID in this group. The grouping executes the exported `causeOf` and `uniqueById` helpers from `src/lib/kb/causes.ts` against the tenant directory, not browser locale or intake guesses.
+
+- Affected tenants: 11.
+- Received: 1 April through 4 October 2026.
+- Intake tagged 356 as parser and 23 as hint. Tags are not authoritative.
+- Day-first tenants, through app/email or a booking-v2 form, follow this path.
+- Example R-41200: "Our 7 April reminder went out on 4 July."
+- App and form reports with the same subject need not share this cause: a booking-v3 form can instead have the hint defect tracked separately.
+
+## Expected and actual
+
+Expected: parse the date according to an explicit tenant/input contract and preserve the intended calendar day.
+
+Actual: month-first parsing swaps the day and month for ambiguous day-first input.
+
+## Proposed fix and acceptance
+
+Use an explicit locale/date-format contract at the parser boundary, or accept an unambiguous date representation rather than guessing slash-date order. Cover day/month ambiguity, days above 12, leap dates, app/email inputs, and booking-v2 forms. Prove the booking-v3 hint fix separately; a parser change alone does not fix that form's misleading instruction.
+
+## Explicit uncertainty
+
+Five reports are filed in this group by the exported tenant/channel rule but were read by the desk as one-day moves: R-41202, R-41209, R-41236, R-41344, and R-41620. They remain included in 379, not added again. Their bodies are not proof of a month/day swap. Reproduce them with original dates, zones, and event payloads before asserting a timezone/DST root cause or claiming this fix resolves them.
+
+The export demonstrates the support classification and its modeled parser mechanism, not a production reproduction or deployed fix.

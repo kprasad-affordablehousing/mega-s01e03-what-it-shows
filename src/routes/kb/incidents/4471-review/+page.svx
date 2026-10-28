@@ -1,0 +1,88 @@
+---
+layout: runbook
+title: '#4471 review: separate the parser and form-hint defects'
+owner: Copilot for kprasad-affordablehousing
+status: proposed
+reviewed: '2026-10-28'
+signature: 'Copilot / kprasad-affordablehousing / 2026-10-28'
+---
+
+<script>
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import QueueTimeline from '#lib/kb/QueueTimeline.svelte';
+  import IncidentAudit from '#lib/kb/IncidentAudit.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+## What changed in our understanding
+
+The [original incident page](/kb/incidents/4471) says one issue and one queued fix.
+Its executable table disagrees: the reports split between a shared parser defect
+and a booking-form hint defect. Fixing the shared parser alone does not resolve
+the form's contradictory instruction.
+
+This review uses the 4 October export. It does not claim that either fix has
+shipped or that the live desk queue has stopped changing.
+
+## Evidence from the exported records
+
+<IncidentAudit />
+
+<CauseTable ticket={4471} />
+
+The table above describes historical filing in the exported support system.
+Its "no ticket of its own" label is evidence of the original merge, not a claim
+that the new GitHub ticket below is absent.
+
+Read `causeOf` in `src/lib/kb/causes.ts` with the tenant directory loaded by
+`locales.ts`. A day-first tenant's app/email input, or booking-v2 form input,
+takes the parser path. A day-first tenant's booking-v3 form takes the hint path.
+The deployed form and channel matter together. Intake tags inferred from a
+reporter's browser are guesses, not root-cause evidence.
+
+## Separate tickets and separate fixes
+
+- [Shared month-first parser: GitHub issue 2](https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/2). Dates written day first are read month first. Use an explicit input/date-format contract or an unambiguous representation instead of guessing slash-date order.
+- [booking-v3 date hint: GitHub issue 1](https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/1). Alder Physio, Copper Studio and Pale Harbour run a form whose hint prints `MM/DD/YYYY`, while the form reads dates in the tenant's day-first order. Make its label, example, validation and parsing agree.
+
+The report-ID lists in `analysis.json` account for every report exactly once.
+They are computed with the exported helpers, not copied from the old prose or
+grouped by subject. The issues describe the evidence boundary: the export models
+the failure mechanisms; it is not a production reproduction.
+
+## Receipt time is not merge time
+
+<QueueTimeline ticket={4471} />
+
+Reports start arriving in April, while the first merges appear in July.
+The merge burst records desk activity on an existing backlog, not the beginning
+of a new failure. Read the received and merged bars separately when deciding
+how long customers have been affected.
+
+## Do not invent a cause for the exceptions
+
+The one-day descriptions above do not establish month/day swaps. Recover
+their original input dates, tenant and recipient time zones, event payloads,
+and display/parser behavior before asserting a timezone or daylight-saving
+defect. Keep these reports visible in their filed group and track follow-up;
+do not silently discard them or claim the parser fix is sufficient.
+
+## Change the triage decision, not just this incident
+
+The [triage page](/kb/triage/dedupe) and
+[accepted decision 0001](/kb/decisions/0001-dedupe-by-subject) were reviewed in
+June 2024. The rendered layout marks them stale. Their accepted status does not
+make subject-only deduplication reliable.
+
+The triage explorer supplies a counterexample: for Alder Physio, identical
+subjects in an app report and a booking-v3 form report correspond to different
+causes. Conversely, different subjects can describe the same parser path.
+Missing tenant information means investigate, not automatically merge.
+
+Propose a new decision that supersedes subject-only matching: use subjects for
+search, then compare the tenant's locale, deployed form, channel and reproduced
+mechanism before merging. Preserve accepted decision 0001 as history. Review
+each new report against the separate tickets and refresh this page when the
+live queue or deployed forms change.
+
+<RenderStamp {signature} />
