@@ -45,6 +45,7 @@ This repository preserves the original export and adds a signed review:
 - [Parser issue: 379 reports](https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/2)
 - [Form-hint issue: 33 reports](https://github.com/kprasad-affordablehousing/mega-s01e03-what-it-shows/issues/1)
 - [Computed analysis and complete report-ID assignments](analysis.json)
+- [Reusable GitHub delivery skill](skills/github-course-delivery/SKILL.md)
 
 With Node.js 22.18 or newer, reproduce the delivery:
 
